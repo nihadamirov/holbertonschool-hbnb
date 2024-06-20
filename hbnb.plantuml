@@ -1,70 +1,88 @@
 @startuml
-package "AirBnB" {
-    class User {
-        id: UUID4
-        email: string
-        password: string
-        first_name: string
-        last_name: string
-        created_at: datetime
-        updated_at: datetime
-    }
-    
-    class Place {
-        id: UUID4
-        name: string
-        description: string
-        address: string
-        city_id: UUID4
-        latitude: float
-        longitude: float
-        host_id: UUID4
-        number_of_rooms: integer
-        number_of_bathrooms: integer
-        price_per_night: float
-        max_guests: integer
-        created_at: datetime
-        updated_at: datetime
-    }
-    
-    class Review {
-        id: UUID4
-        place_id: UUID4
-        user_id: UUID4
-        text: string
-        rating: integer
-        created_at: datetime
-        updated_at: datetime
-    }
-    
-    class Amenity {
-        id: UUID4
-        name: string
-        created_at: datetime
-        updated_at: datetime
-    }
-    
-    class City {
-        id: UUID4
-        name: string
-        country_id: UUID4
-        created_at: datetime
-        updated_at: datetime
-    }
-    
-    class Country {
-        id: UUID4
-        name: string
-    }
-    
-    User "1" --> "1" Place : Has many
-    Place "1" --> "0..1" User : Belongs to (host)
-    Place "1" --> "1" City : Belongs to
-    Place "1" --> "0..*" Review : Has many
-    Review "1" --> "1" User : Belongs to
-    Review "1" --> "1" Place : Belongs to
-    Amenity "0..*" --> "0..*" Place : Has many (many-to-many)
-    City "1" --> "1" Country : Belongs to
-    Country "1" --> "0..*" City : Has many
+
+class User {
+  + UUID4 id
+  + string email
+  + string password
+  + string first_name
+  + string last_name
+  + datetime created_at
+  + datetime updated_at
+  --
+  + owns_many Places
+  + writes_many Reviews
 }
+
+class Place {
+  + UUID4 id
+  + string name
+  + string description
+  + string address
+  + UUID4 city_id
+  + float latitude
+  + float longitude
+  + UUID4 host_id
+  + integer number_of_rooms
+  + integer number_of_bathrooms
+  + float price_per_night
+  + integer max_guests
+  + datetime created_at
+  + datetime updated_at
+  --
+  + has_one User (host)
+  + belongs_to City
+  + has_many Reviews
+  + has_many Amenities (many-to-many)
+}
+
+class Review {
+  + UUID4 id
+  + UUID4 place_id
+  + UUID4 user_id
+  + string text
+  + integer rating
+  + datetime created_at
+  + datetime updated_at
+  --
+  + belongs_to Place
+  + belongs_to User
+}
+
+class Amenity {
+  + UUID4 id
+  + string name
+  + datetime created_at
+  + datetime updated_at
+  --
+  + has_many Places (many-to-many)
+}
+
+class City {
+  + UUID4 id
+  + string name
+  + UUID4 country_id
+  + datetime created_at
+  + datetime updated_at
+  --
+  + belongs_to Country
+  + has_many Places
+}
+
+class Country {
+  + UUID4 id
+  + string name
+  --
+  + has_many Cities
+}
+
+User "1" -- "0..*" Place : owns
+Place "1" -- "0..*" Review : has
+Place "1" -- "0..*" Amenity : has
+Place "1" -- "1" City : belongs to
+City "1" -- "0..*" Place : contains
+City "1" -- "1" Country : belongs to
+Country "1" -- "0..*" City : contains
+Review "0..*" -- "1" User : written by
+Review "0..*" -- "1" Place : for
+
 @enduml
