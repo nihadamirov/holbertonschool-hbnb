@@ -1,0 +1,70 @@
+@startuml
+package "AirBnB" {
+    class User {
+        id: UUID4
+        email: string
+        password: string
+        first_name: string
+        last_name: string
+        created_at: datetime
+        updated_at: datetime
+    }
+    
+    class Place {
+        id: UUID4
+        name: string
+        description: string
+        address: string
+        city_id: UUID4
+        latitude: float
+        longitude: float
+        host_id: UUID4
+        number_of_rooms: integer
+        number_of_bathrooms: integer
+        price_per_night: float
+        max_guests: integer
+        created_at: datetime
+        updated_at: datetime
+    }
+    
+    class Review {
+        id: UUID4
+        place_id: UUID4
+        user_id: UUID4
+        text: string
+        rating: integer
+        created_at: datetime
+        updated_at: datetime
+    }
+    
+    class Amenity {
+        id: UUID4
+        name: string
+        created_at: datetime
+        updated_at: datetime
+    }
+    
+    class City {
+        id: UUID4
+        name: string
+        country_id: UUID4
+        created_at: datetime
+        updated_at: datetime
+    }
+    
+    class Country {
+        id: UUID4
+        name: string
+    }
+    
+    User "1" --> "1" Place : Has many
+    Place "1" --> "0..1" User : Belongs to (host)
+    Place "1" --> "1" City : Belongs to
+    Place "1" --> "0..*" Review : Has many
+    Review "1" --> "1" User : Belongs to
+    Review "1" --> "1" Place : Belongs to
+    Amenity "0..*" --> "0..*" Place : Has many (many-to-many)
+    City "1" --> "1" Country : Belongs to
+    Country "1" --> "0..*" City : Has many
+}
+@enduml
