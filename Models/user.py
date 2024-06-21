@@ -15,3 +15,13 @@ class User(BaseClass):
 
     def add_review(self, review):
         self.reviews.append(review)
+        
+    def set_email(self, email):
+        if email == self.email:
+            return
+        if email in existing_emails:
+            raise ValueError("email is already used")
+        self.email = email
+        existing_emails.add(email)
+
+existing_emails = set() 
