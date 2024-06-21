@@ -1,4 +1,4 @@
-from .BaseClass import BaseClass
+from BaseClass import BaseClass
 
 class City(BaseClass):
     def __init__(self, name, country_id):
