@@ -1,4 +1,4 @@
-from .BaseClass import BaseClass
+from BaseClass import BaseClass
 
 class User(BaseClass):
     def __init__(self, email, password, first_name, last_name):
