@@ -1,4 +1,4 @@
-from .BaseClass import BaseClass
+from BaseClass import BaseClass
 
 class Place(BaseClass):
     def __init__(self, name, description, address, city_id, latitude, longitude, host_id, number_of_rooms, number_of_bathrooms, price_per_night, max_guests):
