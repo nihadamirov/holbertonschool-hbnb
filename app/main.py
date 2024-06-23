@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_restx import Api, Resource, fields, Namespace
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import exc
 import sys
@@ -250,6 +251,29 @@ class ReviewDetail(Resource):
         except exc.IntegrityError:
             db.session.rollback()
             return {'message': 'Invalid user_id provided.'}, 400
+        
+
+app = Flask(__name__)
+api = Api(app, version='1.0', title='My API', description='API for managing something')
+
+# Example model for request payload
+model = api.model('Model', {
+    'name': fields.String(required=True, description='Name of something'),
+    'value': fields.Integer(required=True, description='Value of something')
+})
+
+@api.route('/endpoint')
+class Endpoint(Resource):
+    @api.doc(responses={200: 'OK', 400: 'Invalid Request'})
+    @api.expect(model)
+    def post(self):
+        """
+        Create something
+        """
+        data = api.payload
+        # Process data
+        return {'message': 'Created successfully'}, 200
+
 
 if __name__ == "__main__":
     app.run(debug=True)
