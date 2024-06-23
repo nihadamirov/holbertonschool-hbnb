@@ -1,4 +1,4 @@
-from BaseClass import BaseClass
+from app.models.BaseClass import BaseClass
 
 class User(BaseClass):
     def __init__(self, email, password, first_name, last_name):
@@ -24,4 +24,4 @@ class User(BaseClass):
         self.email = email
         existing_emails.add(email)
 
-existing_emails = set() 
+existing_emails = set()
