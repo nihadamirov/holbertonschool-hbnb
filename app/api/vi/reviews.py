@@ -3,7 +3,7 @@ from models.review import Review
 from models.user import User
 from models.place import Place
 
-reviews_bp = Blueprint('reviews', __name__, url_prefix='/reviews')
+reviews_bp = Blueprint('reviews_api', __name__, url_prefix='/reviews')
 
 @reviews_bp.route('/places/<int:place_id>/reviews', methods=['POST'])
 def create_review(place_id):

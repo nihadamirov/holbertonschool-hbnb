@@ -1,4 +1,4 @@
-from BaseClass import BaseClass
+from app.models.BaseClass import BaseClass
 
 class Country(BaseClass):
     def __init__(self, name):

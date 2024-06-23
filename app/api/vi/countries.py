@@ -1,9 +1,12 @@
 from flask import Blueprint, jsonify, abort
 import json
+import os
 
 country_api = Blueprint('country_api', __name__)
 
-with open('countries.json', 'r') as f:
+file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'countries.json')
+
+with open(file_path, 'r') as f:
     countries = json.load(f)
 
 @country_api.route('/countries', methods=['GET'])
