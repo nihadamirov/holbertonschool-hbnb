@@ -1,5 +1,8 @@
 Flask
 Flask-RESTful
 Flask-SQLAlchemy
+Flask-JWT-Extended
+flask-bcrypt
+flask-jwt-extended
 pydantic
 gunicorn
