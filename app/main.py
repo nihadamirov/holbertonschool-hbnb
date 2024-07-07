@@ -1,32 +1,9 @@
-from flask import Flask, jsonify, request
-from flask_restx import Api, Resource, fields, Namespace
-
+from flask import Flask, jsonify, request, Blueprint
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc
-import sys
-import os
-
-# Add the parent directory to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Import blueprints and models from your application structure
-from app.api.vi.users import user_api
-from app.api.vi.countries import country_api
-from app.api.vi.cities import city_api
-from app.api.vi.reviews import reviews_bp
-from app.api.vi.amenities import amenity_api
+from flask_restx import Api, Resource, fields
 
 # Initialize Flask application
 app = Flask(__name__)
-
-# Register blueprints for different API endpoints
-app.register_blueprint(user_api, url_prefix='/api/v1/users')
-app.register_blueprint(country_api, url_prefix='/api/v1/countries')
-app.register_blueprint(city_api, url_prefix='/api/v1/cities')
-app.register_blueprint(reviews_bp, url_prefix='/api/v1/reviews')
-app.register_blueprint(amenity_api, url_prefix='/api/v1/amenities')
-
-# SQLAlchemy configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -72,11 +49,13 @@ class Review(db.Model):
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
 # Define namespaces for Flask-Restx
-places_ns = Namespace('places', description='Places endpoints')
-reviews_ns = Namespace('reviews', description='Reviews endpoints')
+api = Api(app, version='1.0', title='My API', description='API for managing something')
+
+places_ns = api.namespace('places', description='Places endpoints')
+reviews_ns = api.namespace('reviews', description='Reviews endpoints')
 
 # Serialization models
-place_model = places_ns.model('Place', {
+place_model = api.model('Place', {
     'name': fields.String(required=True, description='Place name'),
     'description': fields.String(description='Place description'),
     'address': fields.String(description='Place address'),
@@ -91,7 +70,7 @@ place_model = places_ns.model('Place', {
     'amenity_ids': fields.List(fields.Integer, description='List of amenity IDs')
 })
 
-review_model = reviews_ns.model('Review', {
+review_model = api.model('Review', {
     'user_id': fields.Integer(required=True, description='User ID'),
     'rating': fields.Integer(required=True, description='Rating (1-5)'),
     'comment': fields.String(description='Review comment')
@@ -251,30 +230,6 @@ class ReviewDetail(Resource):
         except exc.IntegrityError:
             db.session.rollback()
             return {'message': 'Invalid user_id provided.'}, 400
-        
-
-app = Flask(__name__)
-api = Api(app, version='1.0', title='My API', description='API for managing something')
-
-# Example model for request payload
-model = api.model('Model', {
-    'name': fields.String(required=True, description='Name of something'),
-    'value': fields.Integer(required=True, description='Value of something')
-})
-
-@api.route('/endpoint')
-class Endpoint(Resource):
-    @api.doc(responses={200: 'OK', 400: 'Invalid Request'})
-    @api.expect(model)
-    def post(self):
-        """
-        Create something
-        """
-        data = api.payload
-        # Process data
-        return {'message': 'Created successfully'}, 200
-
 
 if __name__ == "__main__":
     app.run(debug=True)
-

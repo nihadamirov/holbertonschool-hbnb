@@ -1,36 +1,46 @@
-from app.models.BaseClass import BaseClass
+from datetime import datetime
+from app import db  
 
-class Review(BaseClass):
+class Review(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    place_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    text = db.Column(db.Text)
+    rating = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     def __init__(self, place_id, user_id, text, rating):
-        super().__init__()
         self.place_id = place_id
         self.user_id = user_id
         self.text = text
         self.rating = rating
 
-    @staticmethod
-    def find_by_id(review_id):
-        for review in Review._reviews:
-            if review.id == review_id:
-                return review
-        return None
+    @classmethod
+    def find_by_id(cls, review_id):
+        return cls.query.get(review_id)
 
-    @staticmethod
-    def find_by_user_id(user_id):
-        return [review for review in Review._reviews if review.user_id == user_id]
+    @classmethod
+    def find_by_user_id(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).all()
 
-    @staticmethod
-    def find_by_place_id(place_id):
-        return [review for review in Review._reviews if review.place_id == place_id]
+    @classmethod
+    def find_by_place_id(cls, place_id):
+        return cls.query.filter_by(place_id=place_id).all()
 
-    @staticmethod
-    def all():
-        return Review._reviews
+    @classmethod
+    def all(cls):
+        return cls.query.all()
 
     def update(self, text, rating):
         self.text = text
         self.rating = rating
-        self.updated_at = datetime.datetime.now()
+        self.updated_at = datetime.utcnow()
+        db.session.commit()
 
     def delete(self):
-        Review._reviews.remove(self)
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return f"<Review {self.id}>"

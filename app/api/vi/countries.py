@@ -1,26 +1,22 @@
 from flask import Blueprint, jsonify, abort
-import json
-import os
+from app.models.city import City
+from app.models.country import Country
 
 country_api = Blueprint('country_api', __name__)
 
-file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'countries.json')
-
-with open(file_path, 'r') as f:
-    countries = json.load(f)
-
 @country_api.route('/countries', methods=['GET'])
 def get_countries():
-    return jsonify(countries), 200
+    countries = Country.query.all()
+    return jsonify([country.serialize() for country in countries]), 200
 
 @country_api.route('/countries/<country_code>', methods=['GET'])
 def get_country(country_code):
-    country = next((c for c in countries if c["code"] == country_code), None)
+    country = Country.query.filter_by(code=country_code).first()
     if not country:
         abort(404, description="Country not found")
-    return jsonify(country), 200
+    return jsonify(country.serialize()), 200
 
 @country_api.route('/countries/<country_code>/cities', methods=['GET'])
 def get_cities_by_country(country_code):
-    cities = [city for city in data_manager.get_all('City') if city['country_code'] == country_code]
-    return jsonify(cities), 200
+    cities = City.query.filter_by(country_id=country_code).all()
+    return jsonify([city.serialize() for city in cities]), 200
