@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db  
+from app import db
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
